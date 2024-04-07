@@ -15,93 +15,85 @@ struct Node* initStack() {
 // Функция для добавления элемента в стек
 void push(struct Node** top_ref, int new_data) {
     struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
-
+    if (new_node == NULL) {
+        printf("memory allocation error\n");
+        return;
+    }
     new_node->data = new_data;
-    new_node->next = (*top_ref);
-    (*top_ref) = new_node;
+    new_node->next = *top_ref;
+    *top_ref = new_node;
 }
 
-// Функция для удаления верхнего элемента из стека
+// Функция для удаления элемента из стека
 int pop(struct Node** top_ref) {
     if (*top_ref == NULL) {
         printf("Stack is empty\n");
         return -1;
     }
-
     struct Node* temp = *top_ref;
     *top_ref = (*top_ref)->next;
     int popped = temp->data;
     free(temp);
-
     return popped;
 }
 
-// Функция для сортировки чисел методом подсчета
-void countingSortUsingStack(const char* filename) {
+// Функция для сортировки методом подсчета
+void countingSort(FILE* file) {
+    int num;
+    int max = 0;
+    int range = 0;
     struct Node* stack = initStack();
-    int min = 0, max = 0;
 
-    // Открываем файл
-    FILE* file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("Error while opening file\n");
-        return;
-    }
-
-    // Находим минимальное и максимальное числа
-    while (!feof(file)) {
-        int num;
-        fscanf(file, "%d", &num);
-        if (num < min) min = num;
-        if (num > max) max = num;
+    // Чтение чисел из файла и определение максимального числа
+    while (fscanf(file, "%d", &num) != EOF) {
+        if (num > max) {
+            max = num;
+        }
         push(&stack, num);
+        range++;
     }
-    fclose(file);
 
-    // Используем массив для подсчёта
-    int range = max - min + 1;
-    //int count[range];
-
-    // Динамическое выделение памяти для массива count
-    int* count = (int*)malloc(range * sizeof(int));
+    // Выделение памяти и инициализация массива count
+    int* count = (int*)malloc((max + 1) * sizeof(int));
     if (count == NULL) {
-        printf("Error while memory allocation\n");
+        printf("memory allocation error\n");
         return;
     }
-
-    // Инициализация count
-    for (int i = 0; i < range; i++) {
+    for (int i = 0; i <= max; i++) {
         count[i] = 0;
     }
 
-    // Подсчитываем числа
+    // Подсчет встречающихся элементов
     while (stack != NULL) {
-        count[stack->data - min]++;
-        pop(&stack);
+        int data = pop(&stack);
+        count[data]++;
     }
 
-    // Выводим отсортированные числа
-    file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("Error while opening file\n");
-        return;
-    }
-
-    while (!feof(file)) {
-        int num;
-        fscanf(file, "%d", &num);
-        if (count[num - min] > 0) {
-            printf("%d ", num);
-            count[num - min]--;
+    // Вывод исходного массива
+    printf("Original array:\n");
+    for (int i = 0; i <= max; i++) {
+        for (int j = 0; j < count[i]; j++) {
+            printf("%d ", i);
         }
     }
-    fclose(file);
 
+    // Освобождение памяти и завершение программы
     free(count);
 }
 
 int main() {
-    countingSortUsingStack("input.txt");
+    // Открытие файла для чтения
+    FILE* file = fopen("input.txt", "r");
+    if (file == NULL) {
+        printf("Error while opening file\n");
+        return 1;
+    }
+
+    // Сортировка методом подсчета и вывод результатов
+    countingSort(file);
+
+    // Закрытие файла
+    fclose(file);
 
     return 0;
 }

@@ -1,124 +1,87 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
 
-// Структура для стека
-struct Node {
-    int data;
-    struct Node* next;
+#define MAX 1000
+
+struct Stack {
+    int top;
+    int capacity;
+    int* array;
 };
 
-// Функция для создания нового узла стека
-struct Node* newNode(int data) {
-    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
-    node->data = data;
-    node->next = NULL;
-    return node;
+struct Stack* createStack(int capacity) {
+    struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
+    stack->capacity = capacity;
+    stack->top = -1;
+    stack->array = (int*)malloc(stack->capacity * sizeof(int));
+    return stack;
 }
 
-// Функция для добавления элемента в стек
-void push(struct Node** top, int data) {
-    struct Node* node = newNode(data);
-    node->next = *top;
-    *top = node;
+int isEmpty(struct Stack* stack) {
+    return stack->top == -1;
 }
 
-// Функция для удаления элемента из стека
-int pop(struct Node** top) {
-    if (*top == NULL) {
-        printf("Stack is empty\n");
-        return -1;
-    }
-    struct Node* temp = *top;
-    *top = (*top)->next;
-    int popped = temp->data;
-    free(temp);
-    return popped;
+void push(struct Stack* stack, int item) {
+    stack->array[++stack->top] = item;
 }
 
-// Функция для сортировки подсчетом
-void countingSort(struct Node** stack, int n)
-{
-    //int output[n + 1];
-    /*int* output = (int*)malloc((n + 1) * sizeof(int));
-    int count[100001] = { 0 };
-
-    struct Node* current = *stack;
-
-    // Подсчет количества каждого элемента
-    while (current != NULL) {
-        count[current->data]++;
-        current = current->next;
-    }
-
-    // Перезапись значений в стек в отсортированном порядке
-    for (int i = 0; i <= 10000; i++) {
-        while (count[i] >= 1) {
-            push(stack, i);
-            count[i]--;
-        }
-    }
-
-    free(output);*/
-
-    int* output = (int*)malloc((n + 1) * sizeof(int));
-
-    // Находим максимальное значение в стеке
-    int max_val = INT_MIN;
-    struct Node* current = *stack;
-    while (current != NULL) {
-        if (current->data > max_val)
-            max_val = current->data;
-        current = current->next;
-    }
-
-    int* count = (int*)malloc((max_val + 1) * sizeof(int));
-    memset(count, 0, (max_val + 1) * sizeof(int));
-
-    current = *stack;
-    while (current != NULL) {
-        count[current->data]++;
-        current = current->next;
-    }
-
-    // Перезаписываем значения в стек в отсортированном порядке
-    for (int i = 0; i <= max_val; i++) {
-        while (count[i] >= 1) {
-            push(stack, i);
-            count[i]--;
-        }
-    }
+int pop(struct Stack* stack) {
+    if (!isEmpty(stack))
+        return stack->array[stack->top--];
+    return '$';
 }
 
-// Функция для вывода стека
-void printStack(struct Node* node) {
-    while (node != NULL) {
-        printf("%d ", node->data);
-        node = node->next;
-    }
-    printf("\n");
-}
-
-int main() {
-    struct Node* stack = NULL;
-    FILE* file = fopen("input.txt", "r");
+void countingSortUsingStack(char* filename) {
+    FILE* file = fopen(filename, "r");
     if (file == NULL) {
-        printf("Error when opening file");
-        return -1;
+        printf("Ошибка при открытии файла.\n");
+        return;
     }
 
-    int number;
-    while (fscanf(file, "%d", &number) != EOF) {
-        push(&stack, number);
+    int max = 0;
+    int num, i;
+    while (fscanf(file, "%d", &num) == 1) {
+        if (num > max)
+            max = num;
     }
     fclose(file);
 
-    printf("Original stack:");
-    printStack(stack);
+    struct Stack* countStack = createStack(max + 1);
+    int countArray[max + 1];
 
-    countingSort(&stack, 10000);
+    for (i = 0; i < max + 1; i++)
+        countArray[i] = 0;
 
-    printf("Sorted stack:");
-    printStack(stack);
+    file = fopen(filename, "r");
+
+    while (fscanf(file, "%d", &num) == 1)
+        countArray[num]++;
+
+    fclose(file);
+
+    for (i = max; i >= 0; i--) {
+        while (countArray[i] > 0) {
+            push(countStack, i);
+            countArray[i]--;
+        }
+    }
+
+    file = fopen(filename, "w");
+
+    while (!isEmpty(countStack))
+        fprintf(file, "%d ", pop(countStack));
+
+    fclose(file);
+
+    free(countStack->array);
+    free(countStack);
+}
+
+int main() {
+    char filename[] = "numbers.txt";
+    countingSortUsingStack(filename);
+
+    printf("Сортировка подсчётом завершена. Результат записан в файл %s.\n", filename);
 
     return 0;
 }

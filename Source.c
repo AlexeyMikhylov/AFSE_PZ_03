@@ -2,7 +2,8 @@
 #include <stdlib.h>
 
 // Структура для элемента стека
-struct Node {
+struct Node
+{
     int data;
     struct Node* next;
 };
@@ -13,9 +14,11 @@ struct Node* initStack() {
 }
 
 // Функция для добавления элемента в стек
-void push(struct Node** top_ref, int new_data) {
+void push(struct Node** top_ref, int new_data)
+{
     struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
-    if (new_node == NULL) {
+    if (new_node == NULL)
+    {
         printf("memory allocation error\n");
         return;
     }
@@ -24,18 +27,22 @@ void push(struct Node** top_ref, int new_data) {
     *top_ref = new_node;
 }
 
-void countingSort(FILE* file) {
+void countingSort(FILE* file)
+{
     int num;
     int max = INT_MIN;
     int min = INT_MAX;
     int size = 0;
 
     // Определение максимального и минимального чисел в файле
-    while (fscanf(file, "%d", &num) != EOF) {
-        if (num > max) {
+    while (fscanf(file, "%d", &num) != EOF)
+    {
+        if (num > max)
+        {
             max = num;
         }
-        if (num < min) {
+        if (num < min)
+        {
             min = num;
         }
         size++;
@@ -44,24 +51,29 @@ void countingSort(FILE* file) {
     // Выделение памяти и инициализация массива count
     int range = max - min + 1;
     int* count = (int*)malloc(range * sizeof(int));
-    if (count == NULL) {
+    if (count == NULL)
+    {
         printf("memory allocation error\n");
         return;
     }
-    for (int i = 0; i < range; i++) {
+    for (int i = 0; i < range; i++)
+    {
         count[i] = 0;
     }
 
     // Перевод отрицательных чисел в неотрицательное представление
     fseek(file, 0, SEEK_SET);
-    while (fscanf(file, "%d", &num) != EOF) {
+    while (fscanf(file, "%d", &num) != EOF) 
+    {
         count[num - min]++;
     }
 
     // Вывод отсортированного массива
     printf("Sorted array:\n");
-    for (int i = 0; i < range; i++) {
-        for (int j = 0; j < count[i]; j++) {
+    for (int i = 0; i < range; i++)
+    {
+        for (int j = 0; j < count[i]; j++)
+        {
             printf("%d ", i + min);
         }
     }
@@ -70,10 +82,12 @@ void countingSort(FILE* file) {
     free(count);
 }
 
-int main() {
+int main()
+{
     // Открытие файла для чтения
     FILE* file = fopen("input.txt", "r");
-    if (file == NULL) {
+    if (file == NULL)
+    {
         printf("Error while opening file\n");
         return 1;
     }

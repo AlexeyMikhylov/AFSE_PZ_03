@@ -31,56 +31,10 @@ int pop(struct Stack* stack) {
     return '$';
 }
 
-/*void countingSortUsingStack(char* filename) {
-    FILE* file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("Ошибка при открытии файла.\n");
-        return;
-    }
-
-    int max = 0;
-    int num, i;
-    while (fscanf(file, "%d", &num) == 1) {
-        if (num > max)
-            max = num;
-    }
-    fclose(file);
-
-    struct Stack* countStack = createStack(max + 1);
-    int countArray[max + 1];
-
-    for (i = 0; i < max + 1; i++)
-        countArray[i] = 0;
-
-    file = fopen(filename, "r");
-
-    while (fscanf(file, "%d", &num) == 1)
-        countArray[num]++;
-
-    fclose(file);
-
-    for (i = max; i >= 0; i--) {
-        while (countArray[i] > 0) {
-            push(countStack, i);
-            countArray[i]--;
-        }
-    }
-
-    file = fopen(filename, "w");
-
-    while (!isEmpty(countStack))
-        fprintf(file, "%d ", pop(countStack));
-
-    fclose(file);
-
-    free(countStack->array);
-    free(countStack);
-}*/
-
 void countingSortUsingStack(char* filename) {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
-        printf("Ошибка при открытии файла.\n");
+        printf("Error while opening file.\n");
         return;
     }
 
@@ -128,7 +82,7 @@ int main() {
     char filename[] = "input.txt";
     countingSortUsingStack(filename);
 
-    printf("Сортировка подсчётом завершена. Результат записан в файл %s.\n", filename);
+    printf("Sort is completed and written in file %s.\n", filename);
 
     return 0;
 }

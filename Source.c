@@ -37,47 +37,49 @@ int pop(struct Node** top_ref) {
     return popped;
 }
 
-// Функция для сортировки методом подсчета
 void countingSort(FILE* file) {
     int num;
-    int max = 0;
-    int range = 0;
-    struct Node* stack = initStack();
+    int max = INT_MIN;
+    int min = INT_MAX;
+    int size = 0;
 
-    // Чтение чисел из файла и определение максимального числа
+    // Определение максимального и минимального чисел в файле
     while (fscanf(file, "%d", &num) != EOF) {
         if (num > max) {
             max = num;
         }
-        push(&stack, num);
-        range++;
+        if (num < min) {
+            min = num;
+        }
+        size++;
     }
 
     // Выделение памяти и инициализация массива count
-    int* count = (int*)malloc((max + 1) * sizeof(int));
+    int range = max - min + 1;
+    int* count = (int*)malloc(range * sizeof(int));
     if (count == NULL) {
         printf("memory allocation error\n");
         return;
     }
-    for (int i = 0; i <= max; i++) {
+    for (int i = 0; i < range; i++) {
         count[i] = 0;
     }
 
-    // Подсчет встречающихся элементов
-    while (stack != NULL) {
-        int data = pop(&stack);
-        count[data]++;
+    // Перевод отрицательных чисел в неотрицательное представление
+    fseek(file, 0, SEEK_SET);
+    while (fscanf(file, "%d", &num) != EOF) {
+        count[num - min]++;
     }
 
-    // Вывод исходного массива
-    printf("Original array:\n");
-    for (int i = 0; i <= max; i++) {
+    // Вывод отсортированного массива
+    printf("Sorted array:\n");
+    for (int i = 0; i < range; i++) {
         for (int j = 0; j < count[i]; j++) {
-            printf("%d ", i);
+            printf("%d ", i + min);
         }
     }
+    printf("\n");
 
-    // Освобождение памяти и завершение программы
     free(count);
 }
 

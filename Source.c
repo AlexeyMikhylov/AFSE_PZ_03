@@ -24,19 +24,6 @@ void push(struct Node** top_ref, int new_data) {
     *top_ref = new_node;
 }
 
-// Функция для удаления элемента из стека
-int pop(struct Node** top_ref) {
-    if (*top_ref == NULL) {
-        printf("Stack is empty\n");
-        return -1;
-    }
-    struct Node* temp = *top_ref;
-    *top_ref = (*top_ref)->next;
-    int popped = temp->data;
-    free(temp);
-    return popped;
-}
-
 void countingSort(FILE* file) {
     int num;
     int max = INT_MIN;

@@ -1,88 +1,107 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
 
-#define MAX 1000
-
-struct Stack {
-    int top;
-    int capacity;
-    int* array;
+// Структура для элемента стека
+struct Node {
+    int data;
+    struct Node* next;
 };
 
-struct Stack* createStack(int capacity) {
-    struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
-    stack->capacity = capacity;
-    stack->top = -1;
-    stack->array = (int*)malloc(stack->capacity * sizeof(int));
-    return stack;
+// Функция для инициализации стека
+struct Node* initStack() {
+    return NULL;
 }
 
-int isEmpty(struct Stack* stack) {
-    return stack->top == -1;
+// Функция для добавления элемента в стек
+void push(struct Node** top_ref, int new_data) {
+    struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
+
+    new_node->data = new_data;
+    new_node->next = (*top_ref);
+    (*top_ref) = new_node;
 }
 
-void push(struct Stack* stack, int item) {
-    stack->array[++stack->top] = item;
+// Функция для удаления верхнего элемента из стека
+int pop(struct Node** top_ref) {
+    if (*top_ref == NULL) {
+        printf("Stack is empty\n");
+        return -1;
+    }
+
+    struct Node* temp = *top_ref;
+    *top_ref = (*top_ref)->next;
+    int popped = temp->data;
+    free(temp);
+
+    return popped;
 }
 
-int pop(struct Stack* stack) {
-    if (!isEmpty(stack))
-        return stack->array[stack->top--];
-    return '$';
-}
+// Функция для сортировки чисел методом подсчета
+void countingSortUsingStack(const char* filename) {
+    struct Node* stack = initStack();
+    int min = 0, max = 0;
 
-void countingSortUsingStack(char* filename) {
+    // Открываем файл
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
-        printf("Error while opening file.\n");
+        printf("Error while opening file\n");
         return;
     }
 
-    int max = 0;
-    int num, i;
-    while (fscanf(file, "%d", &num) == 1) {
-        if (num > max)
-            max = num;
+    // Находим минимальное и максимальное числа
+    while (!feof(file)) {
+        int num;
+        fscanf(file, "%d", &num);
+        if (num < min) min = num;
+        if (num > max) max = num;
+        push(&stack, num);
     }
     fclose(file);
 
-    struct Stack* countStack = createStack(max + 1);
-    int* countArray = (int*)malloc((max + 1) * sizeof(int));
+    // Используем массив для подсчёта
+    int range = max - min + 1;
+    //int count[range];
 
-    for (i = 0; i < max + 1; i++)
-        countArray[i] = 0;
+    // Динамическое выделение памяти для массива count
+    int* count = (int*)malloc(range * sizeof(int));
+    if (count == NULL) {
+        printf("Error while memory allocation\n");
+        return;
+    }
 
+    // Инициализация count
+    for (int i = 0; i < range; i++) {
+        count[i] = 0;
+    }
+
+    // Подсчитываем числа
+    while (stack != NULL) {
+        count[stack->data - min]++;
+        pop(&stack);
+    }
+
+    // Выводим отсортированные числа
     file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error while opening file\n");
+        return;
+    }
 
-    while (fscanf(file, "%d", &num) == 1)
-        countArray[num]++;
-
-    fclose(file);
-
-    for (i = max; i >= 0; i--) {
-        while (countArray[i] > 0) {
-            push(countStack, i);
-            countArray[i]--;
+    while (!feof(file)) {
+        int num;
+        fscanf(file, "%d", &num);
+        if (count[num - min] > 0) {
+            printf("%d ", num);
+            count[num - min]--;
         }
     }
-
-    file = fopen(filename, "w");
-
-    while (!isEmpty(countStack))
-        fprintf(file, "%d ", pop(countStack));
-
     fclose(file);
 
-    free(countArray);
-    free(countStack->array);
-    free(countStack);
+    free(count);
 }
 
 int main() {
-    char filename[] = "input.txt";
-    countingSortUsingStack(filename);
-
-    printf("Sort is completed and written in file %s.\n", filename);
+    countingSortUsingStack("input.txt");
 
     return 0;
 }

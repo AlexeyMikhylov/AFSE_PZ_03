@@ -38,8 +38,8 @@ int pop(struct Node** top) {
 // Функция для сортировки подсчетом
 void countingSort(struct Node** stack, int n)
 {
-    //int output[n + 1];
-    /*int* output = (int*)malloc((n + 1) * sizeof(int));
+    int output[n + 1];
+    int* output = (int*)malloc((n + 1) * sizeof(int));
     int count[100001] = { 0 };
 
     struct Node* current = *stack;
@@ -58,7 +58,7 @@ void countingSort(struct Node** stack, int n)
         }
     }
 
-    free(output);*/
+    free(output);
 
     int* output = (int*)malloc((n + 1) * sizeof(int));
 

@@ -38,18 +38,22 @@ void countingSortUsingStack(char* filename) {
         return;
     }
 
-    int max = 0;
+    int max = INT_MIN;
+    int min = INT_MAX;
+
     int num, i;
     while (fscanf(file, "%d", &num) == 1) {
         if (num > max)
             max = num;
+        if (num < min)
+            min = num;
     }
     fclose(file);
 
-    struct Stack* countStack = createStack(max + 1);
-    int* countArray = (int*)malloc((max + 1) * sizeof(int));
+    struct Stack* countStack = createStack(max - min + 1);
+    int* countArray = (int*)malloc((max - min + 1) * sizeof(int));
 
-    for (i = 0; i < max + 1; i++)
+    for (i = 0; i < max - min + 1; i++)
         countArray[i] = 0;
 
     file = fopen(filename, "r");
@@ -59,7 +63,7 @@ void countingSortUsingStack(char* filename) {
 
     fclose(file);
 
-    for (i = max; i >= 0; i--) {
+    for (i = max - min; i >= 0; i--) {
         while (countArray[i] > 0) {
             push(countStack, i);
             countArray[i]--;

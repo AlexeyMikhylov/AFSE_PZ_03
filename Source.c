@@ -2,30 +2,30 @@
 #include <stdlib.h>
 
 // Структура для элемента стека
-struct Node
+struct element
 {
-    int data;
-    struct Node* next;
+    int digit;
+    struct element * next;
 };
 
 // Функция для инициализации стека
-struct Node* initStack()
+struct element* initStack()
 {
     return NULL;
 }
 
 // Функция для добавления элемента в стек
-void push(struct Node** top_ref, int new_data)
+void push(struct element** top_ref, int new_data)
 {
-    struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
-    if (new_node == NULL)
+    struct element* new_el = (struct element*)malloc(sizeof(struct element));
+    if (new_el == NULL)
     {
         printf("memory allocation error\n");
         return;
     }
-    new_node->data = new_data;
-    new_node->next = *top_ref;
-    *top_ref = new_node;
+    new_el->digit = new_data;
+    new_el->next = *top_ref;
+    *top_ref = new_el;
 }
 
 void countingSort(FILE* file)
@@ -57,6 +57,8 @@ void countingSort(FILE* file)
         printf("memory allocation error\n");
         return;
     }
+
+    //Заполняем счетный массив
     for (int i = 0; i < range; i++)
     {
         count[i] = 0;

@@ -9,29 +9,38 @@ struct Stack {
     int* array;
 };
 
-struct Stack* createStack(int capacity) {
+struct Stack* createStack(int capacity)
+{
     struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
+
     stack->capacity = capacity;
     stack->top = -1;
     stack->array = (int*)malloc(stack->capacity * sizeof(int));
+    
     return stack;
 }
 
-int isEmpty(struct Stack* stack) {
+int isEmpty(struct Stack* stack)
+{
     return stack->top == -1;
 }
 
-void push(struct Stack* stack, int item) {
+//Добавляет новый элемент "сверху"
+void push(struct Stack* stack, int item)
+{
     stack->array[++stack->top] = item;
 }
 
-int pop(struct Stack* stack) {
+int pop(struct Stack* stack)
+{
     if (!isEmpty(stack))
         return stack->array[stack->top--];
-    return '$';
+
+    return NULL;
 }
 
-void countingSortUsingStack(char* filename) {
+void countingSortUsingStack(char* filename)
+{
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
         printf("Error while opening file.\n");
@@ -42,7 +51,8 @@ void countingSortUsingStack(char* filename) {
     int min = INT_MAX;
 
     int num, i;
-    while (fscanf(file, "%d", &num) == 1) {
+    while (fscanf(file, "%d", &num) == 1)
+    {
         if (num > max)
             max = num;
         if (num < min)
@@ -58,14 +68,17 @@ void countingSortUsingStack(char* filename) {
 
     file = fopen(filename, "r");
 
-    while (fscanf(file, "%d", &num) == 1)
-        countArray[num]++;
+    fseek(file, 0, SEEK_SET);
+    while (fscanf(file, "%d", &num) != EOF)
+        countArray[num - min]++;
 
     fclose(file);
 
-    for (i = max - min; i >= 0; i--) {
-        while (countArray[i] > 0) {
-            push(countStack, i);
+    for (i = max - min; i >= 0; i--)
+    {
+        while (countArray[i] > 0)
+        {
+            push(countStack, i + min);
             countArray[i]--;
         }
     }
@@ -82,7 +95,8 @@ void countingSortUsingStack(char* filename) {
     free(countStack);
 }
 
-int main() {
+int main()
+{
     char filename[] = "input.txt";
     countingSortUsingStack(filename);
 

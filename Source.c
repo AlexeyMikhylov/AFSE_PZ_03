@@ -9,7 +9,8 @@ struct Node
 };
 
 // Функция для инициализации стека
-struct Node* initStack() {
+struct Node* initStack()
+{
     return NULL;
 }
 
